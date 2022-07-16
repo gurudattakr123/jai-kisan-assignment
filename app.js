@@ -2,7 +2,9 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 const router = express.Router();
-const appRouter = require("./routes");
+const mongoose = require('mongoose');
+
+mongoose.Promise = global.Promise;
 
 
 app.use(bodyParser.urlencoded({
@@ -13,23 +15,24 @@ app.use(bodyParser.json());
 
 app.use(router);
 
+const db = require("./models/dbService");
+
+mongoose.connect(db.url, { useNewUrlParser: true }).then(function () {
+    console.log("connected");
+  }).catch(function (err) {
+    console.log("not connected " + err);
+  });
 
 app.set("port", 4444);
 
-app.use(function error_handler(err, req, res, next) {
-    res.header("Content-Type", "application/json; charset=utf-8");
-    res.status(err.code || 500).send(
-        JSON.stringify(err.msg, undefined, 2));
-    });
-
 app.listen(app.get("port"), () => {
-    logger.info("Express server : started on port " + app.get("port"))
+    console.info("Express server : started on port " + app.get("port"))
 })
 
-router.get('/v1/customers')
-router.delete('/v1/customer/:id')
-router.post('/v1/customers')
-router.post('/v1/:customerId/card')
-router.get('/v1/card')
+var customerRoute = require('./router/customers');
+
+
+app.use('/customers', customerRoute);
+
 
 module.exports = app;
