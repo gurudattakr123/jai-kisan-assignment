@@ -9,6 +9,5 @@ router.get('/:customerId', customerController.getCustomerDetails)
 router.delete('/:customerId', customerController.deleteCustomer)
 router.post('/', uniqueEmail, customerController.createCustomer)
 
-router.get('/cards')
 
 module.exports = router;

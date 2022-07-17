@@ -8,7 +8,8 @@ const cardSchema = new mongoose.Schema({
     },
     cardType: {
         type: String,
-        enum: ['REGULAR', 'SPECIAL']
+        enum: ['REGULAR', 'SPECIAL'],
+        message: '{VALUE} is not supported'
     },
     customerName: {
         type: String
@@ -16,7 +17,8 @@ const cardSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ['ACTIVE', 'INACTIVE'],
-        default: 'ACTIVE'
+        default: 'ACTIVE',
+        message: '{VALUE} is not supported'
     },
     vision: {
         type: String

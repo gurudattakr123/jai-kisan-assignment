@@ -15,6 +15,9 @@ exports.getCardDetails = (req, res) => {
             }
         })
     } catch (err) {
+        if (err.name === 'ValidatorError') {
+            res.status(400).json({code: 400, status: 'failure', message: 'validation error', data: err});
+        }
         res.status(500).json({code: 500, status: 'failure', message: 'Something went wrong', data: err});
     }
 }
@@ -32,6 +35,9 @@ exports.getallCardsPerCustomer = async (req, res) => {
             });
         }
     } catch (err) {
+        if (err.name === 'ValidatorError') {
+            res.status(400).json({code: 400, status: 'failure', message: 'validation error', data: err});
+        }
         res.status(500).json({code: 500, status: 'failure', message: 'Something went wrong', data: err});
     }
 }
@@ -39,7 +45,7 @@ exports.getallCardsPerCustomer = async (req, res) => {
 exports.deleteCard = (req, res) => {
     Card.findOne({'cardNumber': req.params.cardId})
         .then(async cardObject => {
-            if(cardObject) {
+            if (cardObject) {
                 await cardObject.deleteOne();
             }
             res.status(200).send({code: 200, status: 'success', message: "Card successfully deleted"});
@@ -53,11 +59,12 @@ exports.createCard = (req, res) => {
         "cardType": req.body.cardType,
         "vision": req.body.vision,
         "customerID": req.params.customerId,
-        "cardNumber": req.body.cardNumber
+        "cardNumber": req.body.cardNumber,
     })
     Customer.findOneAndUpdate({customerID: req.params.customerId}, {$push: {cards: cardObject._id}})
         .then(customerObject => {
             if (customerObject) {
+                cardObject.customerName = req.body.customerName || customerObject.firstName.concat(' ', customerObject.lastName)
                 cardObject.save().then(r => {
                     res.status(201).json({
                         code: 201,
@@ -76,6 +83,9 @@ exports.createCard = (req, res) => {
                 })
             }
         }).catch(err => {
+        if (err.name === 'ValidatorError') {
+            res.status(400).json({code: 400, status: 'failure', message: 'validation error', data: err});
+        }
         res.status(500).json({code: 500, status: 'failure', message: 'Something went wrong', data: err});
     })
 }
