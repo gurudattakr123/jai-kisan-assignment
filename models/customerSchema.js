@@ -13,8 +13,13 @@ const customerSchema = new mongoose.Schema({
     },
     mobileNumber: {
         type: String,
-        required: true,
-        max: 10
+        validate: {
+            validator: function(v) {
+                return v.length === 10;
+            },
+            message: props => `${props.value} is not a valid phone number! Please give 10 digits phone number`
+        },
+        required: true
     },
     DOB: {
         type: Date
@@ -29,7 +34,8 @@ const customerSchema = new mongoose.Schema({
     status: {
         type: String,
         enum: ['ACTIVE', 'INACTIVE'],
-        default: 'ACTIVE'
+        default: 'ACTIVE',
+        message: '{VALUE} is not supported'
     },
     emailID: {
         type: String,

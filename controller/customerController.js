@@ -2,7 +2,8 @@ const Customer = require('../models/customerSchema')
 const uuid = require('uuid')
 
 exports.getCustomerDetails = async (req, res) => {
-    Customer.findOne({'customerID': req.params.customerId}).populate('cards')
+    let status = req.query.status || 'ACTIVE'
+    Customer.findOne({'customerID': req.params.customerId, 'status': status}).populate('cards')
         .then(customerObject => {
             if (customerObject) {
                 res.status(200).send({code: 200, status: 'success', data: customerObject});
@@ -14,12 +15,17 @@ exports.getCustomerDetails = async (req, res) => {
                 });
             }
         }).catch(err => {
-        res.status(500).json({code: 500, status: 'failure', message: 'Something went wrong', data: err});
+        if (err.name === 'ValidationError') {
+            res.status(400).json({code: 400, status: 'failure', message: err.message, data: err});
+        } else {
+            res.status(500).json({code: 500, status: 'failure', message: 'Something went wrong', data: err});
+        }
     })
 }
 
 exports.getallCustomers = async (req, res) => {
-    Customer.find({}).populate('cards')
+    let status = req.query.status || 'ACTIVE'
+    Customer.find({status: status}).populate('cards')
         .then(customerObject => {
             if (customerObject) {
                 res.status(200).send({code: 200, status: 'success', data: customerObject});
@@ -31,7 +37,11 @@ exports.getallCustomers = async (req, res) => {
                 });
             }
         }).catch(err => {
-        res.status(500).json({code: 500, status: 'failure', message: 'Something went wrong', data: err});
+        if (err.name === 'ValidationError') {
+            res.status(400).json({code: 400, status: 'failure', message: err.message, data: err});
+        } else {
+            res.status(500).json({code: 500, status: 'failure', message: 'Something went wrong', data: err});
+        }
     })
 }
 
@@ -40,7 +50,11 @@ exports.deleteCustomer = (req, res) => {
         .then(customerObject => {
             res.status(200).send({code: 200, status: 'success', message: "Customer successfully deleted"});
         }).catch(err => {
-        res.status(500).json({code: 500, status: 'failure', message: 'Something went wrong', data: err});
+        if (err.name === 'ValidationError') {
+            res.status(400).json({code: 400, status: 'failure', message: err.message, data: err});
+        } else {
+            res.status(500).json({code: 500, status: 'failure', message: 'Something went wrong', data: err});
+        }
     })
 }
 
@@ -52,7 +66,8 @@ exports.createCustomer = async (req, res) => {
             "mobileNumber": req.body.mobileNumber,
             "DOB": req.body.dob,
             "address": req.body.addressLine,
-            "emailID": req.body.emailId
+            "emailID": req.body.emailId,
+            "status": req.body.status
         });
 
         res.status(201).json({
@@ -62,7 +77,11 @@ exports.createCustomer = async (req, res) => {
             data: customerObject
         });
     } catch (err) {
-        res.status(500).json({code: 500, status: 'failure', message: 'Something went wrong', data: err});
+        if (err.name === 'ValidationError') {
+            res.status(400).json({code: 400, status: 'failure', message: err.message, data: err});
+        } else {
+            res.status(500).json({code: 500, status: 'failure', message: 'Something went wrong', data: err});
+        }
     }
 
 }
