@@ -30,9 +30,11 @@ app.listen(app.get("port"), () => {
 })
 
 var customerRoute = require('./router/customers');
+var cardRoute = require('./router/cards');
 
 
 app.use('/customers', customerRoute);
+app.use('/customers', cardRoute);
 
 
 module.exports = app;

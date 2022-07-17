@@ -1,21 +1,6 @@
 const mongoose = require('mongoose');
+const uuid = require('uuid')
 
-const cardSchema = new mongoose.Schema({
-    fullName: {
-        type: String,
-        required: 'This field is required.'
-    },
-    email: {
-        type: String
-    },
-    mobile: {
-        type: String,
-        max: 12
-    },
-    city: {
-        type: String
-    }
-});
 
 const customerSchema = new mongoose.Schema({
     firstName: {
@@ -38,7 +23,8 @@ const customerSchema = new mongoose.Schema({
         type: String
     },
     customerID: {
-        type: String
+        type: String,
+        default: uuid.v1()
     },
     status: {
         type: String,
@@ -49,9 +35,13 @@ const customerSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    cards: cardSchema
+    cards: 
+        [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Card'
+        }]
+    
 });
 
 
 module.exports = mongoose.model('Customer', customerSchema); // mongoose automatically look for lower case and plural version of model name in mongodb
-const Card = mongoose.model('Card', cardSchema);

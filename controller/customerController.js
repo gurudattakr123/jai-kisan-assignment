@@ -1,15 +1,14 @@
 const Customer = require('../models/customerSchema')
 const uuid = require('uuid')
 
-exports.getCustomerDetails = (req, res) => {
+exports.getCustomerDetails = async (req, res) => {
     try{
-        Customer.findOne({ 'customerID': req.params.customerId }, function (error, result) {
-            if (result === null) {
-                res.status(404).send({ code: 404, status: 'failure', message: 'Customer information not available for the given details.' });
-            } else {
-                res.status(200).send({ code: 200, status: 'success', data: result });
-            }
-        })
+        let customerObject = await Customer.findOne({ 'customerID': req.params.customerId }).populate('cards')
+        if (customerObject) {
+            res.status(200).send({ code: 200, status: 'success', data: customerObject });
+        } else {
+            res.status(404).send({ code: 404, status: 'failure', message: 'Customer information not available for the given details.' });
+        }
     }catch(err){
         res.status(500).json({ code: 500, status: 'failure', message: 'Something went wrong', data: err });
     }
@@ -51,7 +50,6 @@ exports.createCustomer = async (req, res) => {
             "mobileNumber": req.body.mobileNumber,
             "DOB": req.body.dob,
             "address": req.body.addressLine,
-            "customerID": uuid.v4(),
             "emailID": req.body.emailId
         });
 
