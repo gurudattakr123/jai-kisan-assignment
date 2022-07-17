@@ -1,8 +1,9 @@
 const mongoose = require('mongoose');
+const autoIncrement = require('mongoose-sequence')(mongoose);
 
 const cardSchema = new mongoose.Schema({
     cardNumber: {
-        type: String
+        type: Number
     },
     cardType: {
         type: String,
@@ -24,5 +25,6 @@ const cardSchema = new mongoose.Schema({
         ref: 'Customer'
     }
 });
+cardSchema.plugin(autoIncrement, {inc_field: 'cardNumber'});
 
 module.exports = mongoose.model('Card', cardSchema);

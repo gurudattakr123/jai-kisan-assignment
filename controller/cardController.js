@@ -1,7 +1,5 @@
 const Customer  = require('./../models/customerSchema')
 const Card  = require('./../models/cardSchema')
-var mongoose = require('mongoose');
-const uuid = require('uuid')
 
 exports.getCardDetails = (req, res) => {
     try{
@@ -46,18 +44,20 @@ exports.deleteCard = (req, res) => {
 
 exports.createCard = (req, res) => {
     try{
-        var id = uuid.v1();
         let cardObject = new Card({
             "cardType": req.body.cardType,
             "vision": req.body.vision,
             "customerID": req.params.customerId,
-            "cardNumber": id
+            "cardNumber": req.body.cardNumber
         })
         Customer.findOneAndUpdate({ customerID: req.params.customerId }, {$push: {cards:cardObject._id}})
         .then(customerObject =>{
             if(customerObject){
-                cardObject.save();
-                res.status(201).json({ code: 201, status: 'success', message: `New card for customerID - ${cardObject.customerID} created!`, data: cardObject });
+                cardObject.save().then(r => {
+                    res.status(201).json({ code: 201, status: 'success', message: `New card for customerID - ${cardObject.customerID} created!`, data: cardObject });
+                }).catch(err => {
+                    throw err
+                })
             } else {
                 res.status(404).send({ code: 404, status: 'failure', message: `Customer is not avalable to create the card. Please create a customer first`})
             }
@@ -65,9 +65,7 @@ exports.createCard = (req, res) => {
             res.send(err)
         })
     }
-    catch(err){ 
-        res.status(500).json({ code: 500, status: 'failure', message: 'Something went wrong', data: err });
+    catch(err) {
+        res.status(500).json({code: 500, status: 'failure', message: 'Something went wrong', data: err});
     }
-
-    
 }
