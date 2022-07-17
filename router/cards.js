@@ -5,8 +5,8 @@ var cardController = require('../controller/cardController')
 
 
 router.get('/:customerId/cards', cardController.getallCardsPerCustomer) // get all cards for a customer
-router.get('/:customerId/:cardId') // get details of a card for a customer id
-router.delete('/:customerId/:cardId')
+router.get('/:customerId/cards/:cardId', cardController.getCardDetails) // get details of a card for a customer id
+router.delete('/:customerId/cards/:cardId', cardController.deleteCard)
 router.post('/:customerId/cards',  cardController.createCard)
 
 module.exports = router;

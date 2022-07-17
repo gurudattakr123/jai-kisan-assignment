@@ -1,4 +1,5 @@
-const Customer = require('../models/customerSchema')
+const Customer = require('../models/customerSchema');
+
 const uniqueEmail = function (req, res, next) {
     Customer.findOne({ 'emailID': req.body.emailId }, function (error, result) {
       if (result === null) {

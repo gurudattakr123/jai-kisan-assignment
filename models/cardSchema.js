@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const autoIncrement = require('mongoose-sequence')(mongoose);
+const Customer = require('./customerSchema')
 
 const cardSchema = new mongoose.Schema({
     cardNumber: {
@@ -21,10 +22,19 @@ const cardSchema = new mongoose.Schema({
         type: String
     },
     customerID: {
-        type: String, 
+        type: String,
         ref: 'Customer'
     }
 });
 cardSchema.plugin(autoIncrement, {inc_field: 'cardNumber'});
+
+cardSchema.pre('deleteOne', async function (next) {
+    try {
+        await this.deleteOne({_id: this._id});
+        next()
+    } catch (err) {
+        next(err)
+    }
+})
 
 module.exports = mongoose.model('Card', cardSchema);

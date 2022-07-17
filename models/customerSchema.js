@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const uuid = require('uuid')
-
+const Card = require('./cardSchema')
 
 const customerSchema = new mongoose.Schema({
     firstName: {
@@ -35,13 +35,21 @@ const customerSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    cards: 
+    cards:
         [{
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Card'
         }]
-    
+
 });
 
+customerSchema.pre('findOneAndDelete', async function (next) {
+    try {
+        await Card.deleteMany(this._conditions)
+        next()
+    } catch (err) {
+        next(err)
+    }
+});
 
-module.exports = mongoose.model('Customer', customerSchema); // mongoose automatically look for lower case and plural version of model name in mongodb
+module.exports = mongoose.model('Customer', customerSchema);

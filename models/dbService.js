@@ -5,5 +5,4 @@ const db = {};
 db.mongoose = mongoose;
 db.url = dbConfig.url;
 
-// db.Customer = require("./customerSchema.js")(mongoose);
 module.exports = db;
